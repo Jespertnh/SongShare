@@ -1,0 +1,1 @@
+In mySQL config moet je 'max_allowed_packet' aanpassen anders lukt het niet om LONGBLOB in 1 packet te sturen.
