@@ -2,7 +2,7 @@ package nl.jesper.songshare.services;
 
 import nl.jesper.songshare.SongShareConfig;
 import nl.jesper.songshare.SongFile;
-import nl.jesper.songshare.datacarry.SongFileAndOriginalFilename;
+import nl.jesper.songshare.DTO.SongFileAndOriginalFilename;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.exceptions.FileTypeNotSongException;
@@ -10,7 +10,6 @@ import nl.jesper.songshare.exceptions.SongSizeException;
 import nl.jesper.songshare.repositories.SongRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;

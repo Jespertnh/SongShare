@@ -1,7 +1,7 @@
 package nl.jesper.songshare.controllers;
 
 import nl.jesper.songshare.SongFile;
-import nl.jesper.songshare.datacarry.SongFileAndOriginalFilename;
+import nl.jesper.songshare.DTO.SongFileAndOriginalFilename;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.SongRepository;
