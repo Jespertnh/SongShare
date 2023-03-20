@@ -1,9 +1,7 @@
 package nl.jesper.songshare;
 
-/**
- * Object that contains the filename and contents but the latter must be base64 encoded.
- */
 public class SongFile {
+
     /**
      * The base64 contents of a song file.
      */

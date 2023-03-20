@@ -2,6 +2,7 @@ package nl.jesper.songshare.services;
 
 import nl.jesper.songshare.SongShareConfig;
 import nl.jesper.songshare.SongFile;
+import nl.jesper.songshare.datacarry.SongFileAndOriginalFilename;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.exceptions.FileTypeNotSongException;
@@ -9,6 +10,7 @@ import nl.jesper.songshare.exceptions.SongSizeException;
 import nl.jesper.songshare.repositories.SongRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -27,12 +29,12 @@ import org.apache.tika.Tika;
  */
 @Service
 public class SongService {
-    private SongRepository songRepository;
+    private final SongRepository songRepository;
 
 
     private SongShareConfig configuration;
 
-    private String uploadDirString;
+    private final String uploadDirString;
 
     private Path uploadDirPath;
 
@@ -158,6 +160,26 @@ public class SongService {
     public SongEntity downloadSong(Long songId) {
         Optional<SongEntity> optionalSongEntity = songRepository.findById(songId);
         return optionalSongEntity.orElse(null);
+    }
+
+    /**
+     * Used in SongController for a GET download request.
+     * @param songId The unique ID of the song you want to get returned.
+     * @return A SongFile object which includes the File from the filesystem and the original filename to be used in the HTTP header.
+     * Null if song is not found.
+     */
+    public SongFileAndOriginalFilename getSongFile(Long songId) {
+        Optional<SongEntity> optionalSongEntity = songRepository.findById(songId);
+
+        if (optionalSongEntity.isPresent()) {
+            SongEntity song = optionalSongEntity.get();
+            File songFile = Paths.get(uploadDirString + "/" + song.getFileHash()).toFile();
+            String originalFileName = song.getOriginalFilename();
+
+            return new SongFileAndOriginalFilename(originalFileName,songFile);
+        } else {
+            return null;
+        }
     }
 
 //    /**

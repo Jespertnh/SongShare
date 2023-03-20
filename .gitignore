@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Song binaries ###
+/src/main/resources/song_files/

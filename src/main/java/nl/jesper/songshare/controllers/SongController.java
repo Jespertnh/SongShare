@@ -1,29 +1,27 @@
 package nl.jesper.songshare.controllers;
 
 import nl.jesper.songshare.SongFile;
-import nl.jesper.songshare.SongShareConfig;
+import nl.jesper.songshare.datacarry.SongFileAndOriginalFilename;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.SongRepository;
+import nl.jesper.songshare.requests.get.DownloadSongRequest;
 import nl.jesper.songshare.requests.post.SongUploadRequest;
 import nl.jesper.songshare.responses.BadResponse;
 import nl.jesper.songshare.responses.SuccessResponse;
 import nl.jesper.songshare.services.SongService;
 import nl.jesper.songshare.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Optional;
 
 /**
  * Controller for handling HTTP requests regarding song entities.
@@ -70,5 +68,26 @@ public class SongController {
             return ResponseEntity.badRequest().body(new BadResponse("Wrong login."));
         }
         return ResponseEntity.badRequest().body(new BadResponse("Something went wrong."));
+    }
+
+    @GetMapping(path = "/songs/")
+    public ResponseEntity<InputStreamResource> downloadSong(@RequestBody DownloadSongRequest request) throws FileNotFoundException {
+        long songID = request.getSongID();
+
+        SongFileAndOriginalFilename songFile = songService.getSongFile(songID);
+
+        if (songFile != null) {
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(songFile.getSongFile()));
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("Content-Disposition","attachment; filename=\"" + songFile.getOriginalFilename() + "\"");
+
+            return ResponseEntity.ok()
+                    .headers(httpHeaders)
+                    .contentLength(songFile.getSongFile().length())
+                    .contentType(MediaType.asMediaType(MimeType.valueOf("audio/mpeg3")))
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
