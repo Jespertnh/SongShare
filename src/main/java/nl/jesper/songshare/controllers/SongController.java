@@ -7,8 +7,10 @@ import java.util.Optional;
 
 import nl.jesper.songshare.dto.SongFileAndOriginalFilename;
 import nl.jesper.songshare.dto.requests.get.DownloadSongRequest;
+import nl.jesper.songshare.dto.requests.get.SearchSongsRequest;
 import nl.jesper.songshare.dto.requests.post.SongUploadRequest;
 import nl.jesper.songshare.dto.responses.ApiResponse;
+import nl.jesper.songshare.dto.responses.ListSongsResponse;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.SongRepository;
@@ -58,10 +60,10 @@ public class SongController {
         }
     }
 
-//    @GetMapping("/")
-//    public ResponseEntity<ApiResponse> getAllSongs() {
-//        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "List of all songs retrieved successfully."));
-//    }
+    @GetMapping("/search")
+    public ResponseEntity<ListSongsResponse> getAllSongs(@RequestBody SearchSongsRequest searchSongsRequest) {
+        return ResponseEntity.ok(songService.getSongListingResponse(searchSongsRequest));
+    }
 
     @GetMapping("/download")
     public ResponseEntity<?> downloadSong(@RequestBody DownloadSongRequest request) throws FileNotFoundException {

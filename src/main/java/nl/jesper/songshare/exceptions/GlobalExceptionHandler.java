@@ -26,6 +26,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(SongsNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleSongsNotFoundException(Exception ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND, "The song(s) you were looking for were not found.");
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmptySearchException.class)
+    public ResponseEntity<ErrorResponse> handleEmptySearchException(Exception ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "Search queries are blank. Please enter something to search for.");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
 //    @ExceptionHandler(UsernameAlreadyExistsException.class)
 //    public ResponseEntity<ErrorResponse> handleUsernameAlreadyExistsException(Exception ex) {
 //        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "That username has already been taken.");
