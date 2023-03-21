@@ -57,7 +57,7 @@ public class SongController {
 
 
     @GetMapping(path = "/songs/")
-    public ResponseEntity<InputStreamResource> downloadSong(@RequestBody DownloadSongRequest request) throws FileNotFoundException {
+    public ResponseEntity<?> downloadSong(@RequestBody DownloadSongRequest request) throws FileNotFoundException {
         long songID = request.getSongID();
 
         SongFileAndOriginalFilename songFile = songService.getSongFile(songID);
@@ -73,7 +73,7 @@ public class SongController {
                     .contentType(MediaType.asMediaType(MimeType.valueOf("audio/mpeg3")))
                     .body(resource);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(HttpStatus.NOT_FOUND.value(), "Song not found"));
         }
     }
 }
