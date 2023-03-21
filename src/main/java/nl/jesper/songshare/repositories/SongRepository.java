@@ -9,12 +9,34 @@ import java.util.List;
 
 @Repository
 public interface SongRepository extends JpaRepository<SongEntity, Long> {
-    // Returnt een List met alle SongEntity's als de songTitle exact goed is. Voor intern gebruik.
-    List<SongEntity> findBySongTitle(String songTitle);
+    /**
+     * @param songTitle The exact song title of the SongEntity(s) you want returned.
+     * @return A List of all SongEntity's with the exact song title you added.
+     */
+    List<SongEntity> findSongEntitiesBySongTitle(String songTitle);
 
-    // Returnt een List met alle SongEntity's ook als de input maar een deel van de titel is. Handig voor user input.
-    List<SongEntity> findBySongTitleContainingIgnoreCase(String title);
+    /**
+     * @param songTitle (Part of) a song title (case ignorant).
+     * @return A list of all SongEntity's that have your query in their song title.
+     */
+    List<SongEntity> findSongEntitiesBySongTitleContainsIgnoreCase(String songTitle);
 
-    // Zelfde verhaal, intern gebruik want input moet exact zijn (ook hoofdlettergevoelig)
-    List<SongEntity> findByUploader(UserEntity uploader);
+    /**
+     * @param artistName (Part of) the artist name (case ignorant).
+     * @return A list of all SongEntity's that have your query in their artist's name.
+     */
+    List<SongEntity> findSongEntitiesBySongArtistContainsIgnoreCase(String artistName);
+
+    /**
+     * @param uploader The UserEntity of which you want to retrieve all songs from.
+     * @return A list of all SongEntity's uploaded by the specified UserEntity.
+     */
+    List<SongEntity> findSongEntitiesByUploader(UserEntity uploader);
+
+    /**
+     * @param songTitle (Part of) a song title (case ignorant).
+     * @param artistName (Part of) the artist name (case ignorant).
+     * @return A list of all SongEntity's that contain (parts of) both the song title and artist name.
+     */
+    List<SongEntity> findSongEntitiesBySongTitleContainsIgnoreCaseAndSongArtistContainsIgnoreCase(String songTitle, String artistName);
 }

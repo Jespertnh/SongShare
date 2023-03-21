@@ -2,14 +2,21 @@ package nl.jesper.songshare.services;
 
 import nl.jesper.songshare.SongShareConfig;
 import nl.jesper.songshare.SongFile;
+import nl.jesper.songshare.controllers.SongController;
 import nl.jesper.songshare.dto.SongFileAndOriginalFilename;
+import nl.jesper.songshare.dto.SongListing;
+import nl.jesper.songshare.dto.requests.get.SearchSongsRequest;
+import nl.jesper.songshare.dto.responses.ListSongsResponse;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
+import nl.jesper.songshare.exceptions.EmptySearchException;
 import nl.jesper.songshare.exceptions.FileTypeNotSongException;
 import nl.jesper.songshare.exceptions.SongSizeException;
+import nl.jesper.songshare.exceptions.SongsNotFoundException;
 import nl.jesper.songshare.repositories.SongRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -19,9 +26,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.tika.Tika;
+
 
 /**
  * Service that handles the logic of Song stuff.
@@ -179,6 +188,40 @@ public class SongService {
         } else {
             return null;
         }
+    }
+
+    public ListSongsResponse getSongListingResponse(SearchSongsRequest searchSongsRequest) {
+        ListSongsResponse listSongsResponse = new ListSongsResponse();
+        List<SongEntity> songEntities = null;
+        String songTitleQuery = searchSongsRequest.getSongTitle();
+        String songArtistQuery = searchSongsRequest.getArtistName();
+
+        if (!songTitleQuery.isBlank() && songArtistQuery.isBlank()) {
+            songEntities = songRepository.findSongEntitiesBySongTitleContainsIgnoreCase(songTitleQuery);
+        } else if (!songArtistQuery.isBlank() && songTitleQuery.isBlank()) {
+            songEntities = songRepository.findSongEntitiesBySongArtistContainsIgnoreCase(songArtistQuery);
+        } else if (!songTitleQuery.isBlank() && !songArtistQuery.isBlank()){
+            songEntities = songRepository.findSongEntitiesBySongTitleContainsIgnoreCaseAndSongArtistContainsIgnoreCase(songTitleQuery, songArtistQuery);
+        } else if (songArtistQuery.isBlank() && songTitleQuery.isBlank()) {
+            throw new EmptySearchException();
+        }
+
+        if (songEntities != null) {
+            for (SongEntity songEntity : songEntities) {
+                SongListing songListing = new SongListing();
+
+//                String downloadURL = WebMvcLinkBuilder.linkTo(SongController.class, downloadSong(songEntity.getId())).toString();
+
+                songListing.setSongTitle(songEntity.getSongTitle());
+                songListing.setArtistName(songEntity.getSongArtist());
+                songListing.setSongID(songEntity.getId());
+                songListing.setFileName(songEntity.getOriginalFilename());
+                songListing.setUploadDate(songEntity.getUploadTimeStamp().toString());
+//                songListing.setDownloadURL(downloadURL);
+                listSongsResponse.addSong(songListing);
+            }
+        } else throw new SongsNotFoundException();
+        return listSongsResponse;
     }
 
 //    /**

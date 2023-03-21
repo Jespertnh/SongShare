@@ -10,7 +10,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while processing the request.");
+        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while processing the request. Error: " + ex);
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -23,6 +23,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SongSizeException.class)
     public ResponseEntity<ErrorResponse> handleSongSizeException(Exception ex) {
         ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "The file you uploaded is too large.");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SongsNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleSongsNotFoundException(Exception ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND, "The song(s) you were looking for were not found.");
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmptySearchException.class)
+    public ResponseEntity<ErrorResponse> handleEmptySearchException(Exception ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "Search queries are blank. Please enter something to search for.");
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
