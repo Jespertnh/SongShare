@@ -38,11 +38,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(UsernameAlreadyExistsException.class)
-//    public ResponseEntity<ErrorResponse> handleUsernameAlreadyExistsException(Exception ex) {
-//        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "That username has already been taken.");
-//        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameAlreadyExistsException(Exception ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "That username has already been taken.");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
     public class ErrorResponse {
         private HttpStatus status;

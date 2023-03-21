@@ -26,15 +26,9 @@ public class UserController {
     }
 
     @PostMapping(path = "/users/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse> registerUser(@RequestBody UserRegistrationRequest request) {
-        try {
-            userService.createUser(request.getUsername(), request.getPassword());
-            return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Registered user successfully."));
-        } catch (UsernameAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body(new ApiResponse(HttpStatus.BAD_REQUEST.value(), "Username '" + request.getUsername() + "' already exists."));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred while processing your request."));
-        }
+    public ResponseEntity<ApiResponse> registerUser(@RequestBody UserRegistrationRequest request) throws UsernameAlreadyExistsException {
+        userService.createUser(request.getUsername(), request.getPassword());
+        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Registered user successfully."));
     }
 
 }
