@@ -1,7 +1,6 @@
-package nl.jesper.songshare.requests.post;
+package nl.jesper.songshare.dto.requests.post;
 
 import nl.jesper.songshare.SongFile;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * POST request in JSON format for a song upload.

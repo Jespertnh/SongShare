@@ -1,4 +1,4 @@
-package nl.jesper.songshare.DTO;
+package nl.jesper.songshare.dto;
 
 import java.io.File;
 

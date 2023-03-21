@@ -1,19 +1,18 @@
 package nl.jesper.songshare.controllers;
 
-import nl.jesper.songshare.SongFile;
-import nl.jesper.songshare.DTO.SongFileAndOriginalFilename;
+import nl.jesper.songshare.dto.responses.ApiResponse;
+import nl.jesper.songshare.dto.SongFileAndOriginalFilename;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.SongRepository;
-import nl.jesper.songshare.requests.get.DownloadSongRequest;
-import nl.jesper.songshare.requests.post.SongUploadRequest;
-import nl.jesper.songshare.responses.BadResponse;
-import nl.jesper.songshare.responses.SuccessResponse;
+import nl.jesper.songshare.dto.requests.get.DownloadSongRequest;
+import nl.jesper.songshare.dto.requests.post.SongUploadRequest;
 import nl.jesper.songshare.services.SongService;
 import nl.jesper.songshare.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeType;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Controller for handling HTTP requests regarding song entities.
@@ -42,33 +42,19 @@ public class SongController {
     }
 
     @PostMapping(path = "/songs/upload", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> uploadSong(@RequestBody SongUploadRequest request) {
-        String username = request.getUsername();
-        String unhashedPassword = request.getPassword();
-        String songTitle = request.getSongtitle();
-        String songArtist = request.getSongartist();
-//        MultipartFile multipartFile = request.getMultiPartSongfile();
-        SongFile songFile = request.getSongFile();
-
-        UserEntity user = userService.login(username, unhashedPassword);
-
-        // Als de userService.login een UserEntity heeft teruggegeven, dan is de login gelukt. Zo niet dan is user null.
-        // Zelfde geldt voor de songService.addSong.
-        if (user != null) {
-            SongEntity song = null;
-            try {
-                song = songService.addSong(songFile, songTitle, songArtist, user);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (song != null) {
-                return ResponseEntity.ok(new SuccessResponse("Song upload successful. Song with ID " + song.getId() + " added."));
-            }
-        } else {
-            return ResponseEntity.badRequest().body(new BadResponse("Wrong login."));
+    public ResponseEntity<ApiResponse> uploadSong(@RequestBody SongUploadRequest request) {
+        Optional<UserEntity> userOpt = userService.login(request.getUsername(), request.getPassword());
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), "Wrong login."));
         }
-        return ResponseEntity.badRequest().body(new BadResponse("Something went wrong."));
+        try {
+            SongEntity song = songService.addSong(request.getSongFile(), request.getSongtitle(), request.getSongartist(), userOpt.get());
+            return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Song upload successful. Song with ID " + song.getId() + " added."));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 
     @GetMapping(path = "/songs/")
     public ResponseEntity<InputStreamResource> downloadSong(@RequestBody DownloadSongRequest request) throws FileNotFoundException {

@@ -1,4 +1,4 @@
-package nl.jesper.songshare.requests.get;
+package nl.jesper.songshare.dto.requests.get;
 
 /**
  * GET request in JSON format to download a song with a specific ID.

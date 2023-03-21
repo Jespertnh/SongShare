@@ -1,4 +1,4 @@
-package nl.jesper.songshare.responses;
+package nl.jesper.songshare.dto.responses;
 
 public class BadResponse {
     private String message;

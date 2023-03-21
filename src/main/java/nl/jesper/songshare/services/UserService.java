@@ -7,6 +7,8 @@ import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * Service that handles the logic of user stuff.
  */
@@ -44,11 +46,11 @@ public class UserService {
      * @param unhashedPassword the unhashed password of the UserEntity you're trying to retrieve.
      * @return The UserEntity if password is correct and null if incorrect.
      */
-    public UserEntity login(String username, String unhashedPassword) {
+    public Optional<UserEntity> login(String username, String unhashedPassword) {
         UserEntity user = userRepository.findUserEntityByUsername(username);
 
         if (passwordService.checkPassword(unhashedPassword,user.getPassword())) {
-            return user;
+            return Optional.of(user);
         } else {
             return null;
         }

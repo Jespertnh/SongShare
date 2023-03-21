@@ -2,7 +2,7 @@ package nl.jesper.songshare.services;
 
 import nl.jesper.songshare.SongShareConfig;
 import nl.jesper.songshare.SongFile;
-import nl.jesper.songshare.DTO.SongFileAndOriginalFilename;
+import nl.jesper.songshare.dto.SongFileAndOriginalFilename;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.exceptions.FileTypeNotSongException;

@@ -1,4 +1,4 @@
-package nl.jesper.songshare.requests.post;
+package nl.jesper.songshare.dto.requests.post;
 
 /**
  * POST request in JSON format for a user registration request.

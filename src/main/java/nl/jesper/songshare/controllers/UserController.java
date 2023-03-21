@@ -1,9 +1,9 @@
 package nl.jesper.songshare.controllers;
 
 import nl.jesper.songshare.exceptions.UsernameAlreadyExistsException;
-import nl.jesper.songshare.requests.post.UserRegistrationRequest;
-import nl.jesper.songshare.responses.BadResponse;
-import nl.jesper.songshare.responses.SuccessResponse;
+import nl.jesper.songshare.dto.requests.post.UserRegistrationRequest;
+import nl.jesper.songshare.dto.responses.BadResponse;
+import nl.jesper.songshare.dto.responses.SuccessResponse;
 import nl.jesper.songshare.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
