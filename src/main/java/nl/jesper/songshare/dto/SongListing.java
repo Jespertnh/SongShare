@@ -12,7 +12,7 @@ public class SongListing {
      */
     private String uploadDate;
     private String fileName;
-    private String downloadURL;
+//    private String downloadURL;
     private Long songID;
 
     public String getArtistName() {
@@ -47,13 +47,13 @@ public class SongListing {
         this.fileName = fileName;
     }
 
-    public String getDownloadURL() {
-        return downloadURL;
-    }
-
-    public void setDownloadURL(String downloadURL) {
-        this.downloadURL = downloadURL;
-    }
+//    public String getDownloadURL() {
+//        return downloadURL;
+//    }
+//
+//    public void setDownloadURL(String downloadURL) {
+//        this.downloadURL = downloadURL;
+//    }
 
     public Long getSongID() {
         return songID;

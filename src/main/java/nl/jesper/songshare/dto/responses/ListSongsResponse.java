@@ -2,13 +2,14 @@ package nl.jesper.songshare.dto.responses;
 
 import nl.jesper.songshare.dto.SongListing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListSongsResponse {
     private List<SongListing> songs;
 
-    public ListSongsResponse(List<SongListing> songs) {
-        this.songs = songs;
+    public ListSongsResponse() {
+        this.songs = new ArrayList<>();
     }
 
     public List<SongListing> getSongs() {

@@ -191,7 +191,7 @@ public class SongService {
     }
 
     public ListSongsResponse getSongListingResponse(SearchSongsRequest searchSongsRequest) {
-        ListSongsResponse listSongsResponse = null;
+        ListSongsResponse listSongsResponse = new ListSongsResponse();
         List<SongEntity> songEntities = null;
         String songTitleQuery = searchSongsRequest.getSongTitle();
         String songArtistQuery = searchSongsRequest.getArtistName();
@@ -210,14 +210,14 @@ public class SongService {
             for (SongEntity songEntity : songEntities) {
                 SongListing songListing = new SongListing();
 
-                String downloadURL = WebMvcLinkBuilder.linkTo(SongController.class, downloadSong(songEntity.getId())).toString();
+//                String downloadURL = WebMvcLinkBuilder.linkTo(SongController.class, downloadSong(songEntity.getId())).toString();
 
                 songListing.setSongTitle(songEntity.getSongTitle());
                 songListing.setArtistName(songEntity.getSongArtist());
                 songListing.setSongID(songEntity.getId());
                 songListing.setFileName(songEntity.getOriginalFilename());
                 songListing.setUploadDate(songEntity.getUploadTimeStamp().toString());
-                songListing.setDownloadURL(downloadURL);
+//                songListing.setDownloadURL(downloadURL);
                 listSongsResponse.addSong(songListing);
             }
         } else throw new SongsNotFoundException();
