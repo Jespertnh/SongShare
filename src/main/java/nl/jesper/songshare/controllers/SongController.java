@@ -1,10 +1,5 @@
 package nl.jesper.songshare.controllers;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Optional;
-
 import nl.jesper.songshare.dto.SongFileAndOriginalFilename;
 import nl.jesper.songshare.dto.requests.get.DownloadSongRequest;
 import nl.jesper.songshare.dto.requests.get.SearchSongsRequest;
@@ -13,10 +8,8 @@ import nl.jesper.songshare.dto.responses.ApiResponse;
 import nl.jesper.songshare.dto.responses.ListSongsResponse;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
-import nl.jesper.songshare.repositories.SongRepository;
 import nl.jesper.songshare.services.SongService;
 import nl.jesper.songshare.services.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Optional;
+
 /**
  * Controller voor song endpoints
  */
@@ -33,15 +31,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/songs")
 public class SongController {
 
-    private final SongRepository songRepository;
-
     private final SongService songService;
 
     private final UserService userService;
 
     @Autowired
-    public SongController(SongRepository songRepository, SongService songService, UserService userService) {
-        this.songRepository = songRepository;
+    public SongController(SongService songService, UserService userService) {
         this.songService = songService;
         this.userService = userService;
     }
@@ -50,7 +45,7 @@ public class SongController {
     public ResponseEntity<ApiResponse> uploadSong(@RequestBody SongUploadRequest request) {
         Optional<UserEntity> userOpt = userService.login(request.getUsername(), request.getPassword());
         if (userOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), "Wrong login."));
+            return ResponseEntity.badRequest().body(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), "Wrong login"));
         }
         try {
             SongEntity song = songService.addSong(request.getSongFile(), request.getSongtitle(), request.getSongartist(), userOpt.get());

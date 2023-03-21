@@ -3,7 +3,6 @@ package nl.jesper.songshare.services;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.exceptions.UsernameAlreadyExistsException;
 import nl.jesper.songshare.repositories.UserRepository;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +51,7 @@ public class UserService {
         if (passwordService.checkPassword(unhashedPassword,user.getPassword())) {
             return Optional.of(user);
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }

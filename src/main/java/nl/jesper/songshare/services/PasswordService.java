@@ -1,6 +1,5 @@
 package nl.jesper.songshare.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class PasswordService {
 
     /**
-     * Hashes a unhashed password String.
+     * Hashes an unhashed password String.
      * @param unhashedPassword The unhashed password String.
      * @return The hashed password String.
      */
