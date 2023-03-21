@@ -1,14 +1,20 @@
 package nl.jesper.songshare.controllers;
 
-import nl.jesper.songshare.dto.responses.ApiResponse;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Optional;
+
 import nl.jesper.songshare.dto.SongFileAndOriginalFilename;
+import nl.jesper.songshare.dto.requests.get.DownloadSongRequest;
+import nl.jesper.songshare.dto.requests.post.SongUploadRequest;
+import nl.jesper.songshare.dto.responses.ApiResponse;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.SongRepository;
-import nl.jesper.songshare.dto.requests.get.DownloadSongRequest;
-import nl.jesper.songshare.dto.requests.post.SongUploadRequest;
 import nl.jesper.songshare.services.SongService;
 import nl.jesper.songshare.services.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -18,16 +24,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Optional;
-
 /**
- * Controller for handling HTTP requests regarding song entities.
+ * Controller voor song endpoints
  */
 @RestController
+@RequestMapping("/songs")
 public class SongController {
+
     private final SongRepository songRepository;
 
     private final SongService songService;
@@ -41,7 +44,7 @@ public class SongController {
         this.userService = userService;
     }
 
-    @PostMapping(path = "/songs/upload", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/upload")
     public ResponseEntity<ApiResponse> uploadSong(@RequestBody SongUploadRequest request) {
         Optional<UserEntity> userOpt = userService.login(request.getUsername(), request.getPassword());
         if (userOpt.isEmpty()) {
@@ -55,8 +58,12 @@ public class SongController {
         }
     }
 
+//    @GetMapping("/")
+//    public ResponseEntity<ApiResponse> getAllSongs() {
+//        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "List of all songs retrieved successfully."));
+//    }
 
-    @GetMapping(path = "/songs/")
+    @GetMapping("/download")
     public ResponseEntity<?> downloadSong(@RequestBody DownloadSongRequest request) throws FileNotFoundException {
         long songID = request.getSongID();
 
@@ -65,7 +72,7 @@ public class SongController {
         if (songFile != null) {
             InputStreamResource resource = new InputStreamResource(new FileInputStream(songFile.getSongFile()));
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("Content-Disposition","attachment; filename=\"" + songFile.getOriginalFilename() + "\"");
+            httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + songFile.getOriginalFilename() + "\"");
 
             return ResponseEntity.ok()
                     .headers(httpHeaders)
