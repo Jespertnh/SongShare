@@ -1,4 +1,4 @@
-package nl.jesper.songshare.exceptions;
+package nl.jesper.songshare.exceptions.custom;
 
 /**
  * Custom exception that is to be used when theres something wrong with the filesize of a uploaded song.

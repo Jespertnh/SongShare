@@ -1,7 +1,7 @@
 package nl.jesper.songshare.services;
 
 import nl.jesper.songshare.entities.UserEntity;
-import nl.jesper.songshare.exceptions.UsernameAlreadyExistsException;
+import nl.jesper.songshare.exceptions.custom.UsernameAlreadyExistsException;
 import nl.jesper.songshare.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

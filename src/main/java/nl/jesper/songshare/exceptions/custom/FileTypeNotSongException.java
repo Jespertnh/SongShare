@@ -1,4 +1,4 @@
-package nl.jesper.songshare.exceptions;
+package nl.jesper.songshare.exceptions.custom;
 
 public class FileTypeNotSongException extends RuntimeException {
     public FileTypeNotSongException() {

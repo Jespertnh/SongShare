@@ -2,7 +2,7 @@ package nl.jesper.songshare.controllers;
 
 import nl.jesper.songshare.dto.requests.post.UserRegistrationRequest;
 import nl.jesper.songshare.dto.responses.ApiResponse;
-import nl.jesper.songshare.exceptions.UsernameAlreadyExistsException;
+import nl.jesper.songshare.exceptions.custom.UsernameAlreadyExistsException;
 import nl.jesper.songshare.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

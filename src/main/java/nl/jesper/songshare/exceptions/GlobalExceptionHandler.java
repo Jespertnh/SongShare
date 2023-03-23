@@ -1,5 +1,6 @@
 package nl.jesper.songshare.exceptions;
 
+import nl.jesper.songshare.exceptions.custom.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,11 +41,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUsernameAlreadyExistsException(Exception ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "That username has already been taken.");
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT, "That username has already been taken.");
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
-    public class ErrorResponse {
+    public static class ErrorResponse {
         private HttpStatus status;
         private String message;
 
