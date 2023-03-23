@@ -4,6 +4,7 @@ import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.exceptions.custom.UsernameAlreadyExistsException;
 import nl.jesper.songshare.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,10 +14,13 @@ import java.util.Optional;
  */
 @Service
 public class UserService {
-    @Autowired
-    private PasswordService passwordService;
-    @Autowired
-    private UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+    }
 
     /**
      *
@@ -33,7 +37,7 @@ public class UserService {
             // Username bestaat niet, maak nieuwe gebruiker aan.
             user = new UserEntity();
             user.setUsername(username);
-            user.setPassword(passwordService.hashPassword(password));
+            user.setPassword(passwordEncoder.encode(password));
             userRepository.save(user);
 //            return userRepository.save(user); // Dit zou alleen zo moeten zijn als deze functie niet void was maar een UserEntity terug zou geven.
         }
@@ -48,7 +52,7 @@ public class UserService {
     public Optional<UserEntity> login(String username, String unhashedPassword) {
         UserEntity user = userRepository.findUserEntityByUsername(username);
 
-        if (passwordService.checkPassword(unhashedPassword,user.getPassword())) {
+        if (passwordEncoder.matches(unhashedPassword,user.getPassword())) {
             return Optional.of(user);
         } else {
             return Optional.empty();

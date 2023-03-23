@@ -6,6 +6,7 @@ import nl.jesper.songshare.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -19,7 +20,7 @@ class UserServiceTest {
     UserService userService;
 
     @Autowired
-    PasswordService passwordService;
+    PasswordEncoder passwordEncoder;
 
     @Test
 //    @Order(1)
@@ -35,7 +36,7 @@ class UserServiceTest {
         // Testen
         assertNotNull(user);
         assertEquals(username, user.getUsername());
-        assertTrue(passwordService.checkPassword(password, user.getPassword()));
+        assertTrue(passwordEncoder.matches(password, user.getPassword()));
     }
 
     @Test
@@ -48,12 +49,12 @@ class UserServiceTest {
         // Voorbereiden
         UserEntity existingUser = new UserEntity();
         existingUser.setUsername(username);
-        existingUser.setPassword(passwordService.hashPassword(password));
+        existingUser.setPassword(passwordEncoder.encode(password));
         userRepository.save(existingUser);
 
         // Testen
         Throwable exception = assertThrows(UsernameAlreadyExistsException.class, () -> {
-            userService.createUser(username, passwordService.hashPassword(password)); // Hier probeert ie nog n keer dezelfde gebruikersnaam aan te maken
+            userService.createUser(username, passwordEncoder.encode(password)); // Hier probeert ie nog n keer dezelfde gebruikersnaam aan te maken
         });
         assertEquals("Username '" + username + "' already exists.", exception.getMessage());
     }
