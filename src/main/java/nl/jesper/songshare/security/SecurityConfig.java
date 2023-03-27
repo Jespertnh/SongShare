@@ -1,5 +1,6 @@
 package nl.jesper.songshare.security;
 
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -48,10 +49,11 @@ public class SecurityConfig {
 
     @Bean
     DataSource dataSource() throws IOException {
-        return new EmbeddedDatabaseBuilder()
-                .setType(H2)
-                .addScript(Files.readString(Paths.get("src/main/resources/customUsers.ddl")))
-                .build();
+        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.url("jdbc:mysql://localhost:3306/songshare");
+        dataSourceBuilder.username("root");
+        dataSourceBuilder.password("");
+        return dataSourceBuilder.build();
     }
 
     @Bean
