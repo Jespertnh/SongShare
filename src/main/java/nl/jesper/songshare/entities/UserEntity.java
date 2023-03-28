@@ -1,7 +1,9 @@
 package nl.jesper.songshare.entities;
 
 import jakarta.persistence.*;
+import nl.jesper.songshare.security.RolesEnum;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // Entity hoort eigenlijk puur een data object te zijn.
@@ -22,10 +24,9 @@ public class UserEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id")
     private List<SongEntity> usersSongs;
 
-    // Dit is bedoeld om te checken of de gebruiker admin is of niet.
-    // Eigenlijk wil ik dit alleen aanpassen via directe toegang tot de database.
-    @Column(columnDefinition = "boolean default false", nullable = false) // Deze annotatie zorgt ervoor dat als er een user wordt aangemaakt, deze niet standaard admin is.
-    private Boolean isAdmin = false; // In MySQL is een boolean een tinyint (0 of 1). Verwarrend maar logisch.
+    @Column(nullable = false)
+    @ElementCollection
+    private List<RolesEnum> roles;
 
 
     public Long getId() {
@@ -52,11 +53,24 @@ public class UserEntity {
         return usersSongs;
     }
 
-    public Boolean getAdmin() {
-        return isAdmin;
-    }
-
     public void setUsersSongs(List<SongEntity> usersSongs) {
         this.usersSongs = usersSongs;
+    }
+
+    public List<RolesEnum> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RolesEnum> roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(RolesEnum role) {
+        if (this.roles != null) {
+            roles.add(role);
+        } else {
+            this.roles = new ArrayList<RolesEnum>();
+            roles.add(role);
+        }
     }
 }

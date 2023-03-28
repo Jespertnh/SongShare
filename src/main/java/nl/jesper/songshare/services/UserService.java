@@ -3,7 +3,7 @@ package nl.jesper.songshare.services;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.exceptions.custom.UsernameAlreadyExistsException;
 import nl.jesper.songshare.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.jesper.songshare.security.RolesEnum;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +34,13 @@ public class UserService {
             // Username bestaat al.
             throw new UsernameAlreadyExistsException("Username '" + username + "' already exists.");
         } else {
+
+            RolesEnum defaultRole = RolesEnum.USER;
             // Username bestaat niet, maak nieuwe gebruiker aan.
             user = new UserEntity();
             user.setUsername(username);
             user.setPassword(passwordEncoder.encode(password));
+            user.addRole(defaultRole);
             userRepository.save(user);
 //            return userRepository.save(user); // Dit zou alleen zo moeten zijn als deze functie niet void was maar een UserEntity terug zou geven.
         }

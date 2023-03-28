@@ -1,18 +1,16 @@
 package nl.jesper.songshare.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,13 +18,17 @@ import org.springframework.security.web.SecurityFilterChain;
 import javax.sql.DataSource;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
 @Configuration
 public class SecurityConfig {
+    @Value("${spring.datasource.url}")
+    private String datasourceUrl;
+
+    @Value("${spring.datasource.username}")
+    private String datasourceUsername;
+
+    @Value("${spring.datasource.password=}")
+    private String datasourcePassword;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,10 +51,10 @@ public class SecurityConfig {
 
     @Bean
     DataSource dataSource() throws IOException {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.url("jdbc:mysql://localhost:3306/songshare");
-        dataSourceBuilder.username("root");
-        dataSourceBuilder.password("");
+        DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.url(datasourceUrl);
+        dataSourceBuilder.username(datasourceUsername);
+        dataSourceBuilder.password(datasourcePassword);
         return dataSourceBuilder.build();
     }
 
@@ -69,8 +71,8 @@ public class SecurityConfig {
                 .roles("USER", "ADMIN")
                 .build();
         JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
-        users.createUser(user);
-        users.createUser(admin);
+//        users.createUser(user);
+//        users.createUser(admin);
         return users;
     }
 
