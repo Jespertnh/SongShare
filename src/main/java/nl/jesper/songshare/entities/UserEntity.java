@@ -1,9 +1,14 @@
 package nl.jesper.songshare.entities;
 
 import jakarta.persistence.*;
+import nl.jesper.songshare.repositories.RoleRepository;
 import nl.jesper.songshare.security.RolesEnum;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 // Entity hoort eigenlijk puur een data object te zijn.
@@ -15,7 +20,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false) // Zorgt er voor dat niemand dezelfde username heeft.
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
@@ -45,6 +50,7 @@ public class UserEntity {
         this.password = password;
     }
 
+
     public String getPassword() {
         return password;
     }
@@ -73,4 +79,8 @@ public class UserEntity {
             roles.add(role);
         }
     }
+
+
+
+
 }

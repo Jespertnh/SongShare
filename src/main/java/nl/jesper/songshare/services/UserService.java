@@ -4,6 +4,10 @@ import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.exceptions.custom.UsernameAlreadyExistsException;
 import nl.jesper.songshare.repositories.UserRepository;
 import nl.jesper.songshare.security.RolesEnum;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsPasswordService;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

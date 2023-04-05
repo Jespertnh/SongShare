@@ -2,5 +2,11 @@ package nl.jesper.songshare.security;
 
 public enum RolesEnum {
     USER,
-    ADMIN
+    ADMIN;
+
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }
+

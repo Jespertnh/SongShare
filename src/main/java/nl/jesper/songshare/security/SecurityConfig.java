@@ -1,11 +1,17 @@
 package nl.jesper.songshare.security;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,14 +27,23 @@ import java.io.IOException;
 
 @Configuration
 public class SecurityConfig {
-    @Value("${spring.datasource.url}")
-    private String datasourceUrl;
 
-    @Value("${spring.datasource.username}")
-    private String datasourceUsername;
+    @Autowired
+    private final AuthenticationConfiguration authConfiguration;
+    private String url;
+    private String username;
+    private String password;
 
-    @Value("${spring.datasource.password=}")
-    private String datasourcePassword;
+    private final DataSourceProperties dataSourceProperties;
+
+    @Autowired
+    public SecurityConfig(AuthenticationConfiguration authConfiguration, DataSourceProperties dataSourceProperties) {
+        this.authConfiguration = authConfiguration;
+        this.dataSourceProperties = dataSourceProperties;
+        this.url = dataSourceProperties.determineUrl();
+        this.username = dataSourceProperties.determineUsername();
+        this.password = dataSourceProperties.determinePassword();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,7 +53,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/register").permitAll()
                         .anyRequest().authenticated()
@@ -52,9 +67,9 @@ public class SecurityConfig {
     @Bean
     DataSource dataSource() throws IOException {
         DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.url(datasourceUrl);
-        dataSourceBuilder.username(datasourceUsername);
-        dataSourceBuilder.password(datasourcePassword);
+        dataSourceBuilder.url(url);
+        dataSourceBuilder.username(username);
+        dataSourceBuilder.password(password);
         return dataSourceBuilder.build();
     }
 
@@ -75,6 +90,16 @@ public class SecurityConfig {
 //        users.createUser(admin);
         return users;
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authConfiguration.getAuthenticationManager();
+    }
+
+//    @Autowired
+//    public void configure(AuthenticationManagerBuilder builder, AuthenticationProvider jwtAuthenticationProvider) {
+//        builder.authenticationProvider(jwtAuthenticationProvider);
+//    }
 
 }
 
