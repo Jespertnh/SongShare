@@ -1,12 +1,14 @@
 package nl.jesper.songshare.entities;
 
 import jakarta.persistence.*;
-import nl.jesper.songshare.repositories.RoleRepository;
-import nl.jesper.songshare.security.RolesEnum;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import nl.jesper.songshare.securitylayerJwt.models.Role;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +17,12 @@ import java.util.List;
 // Repository voor database zoekopdrachten
 // Service voor de logica
 @Entity(name = "user_accounts")
-public class UserEntity {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class UserEntity implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,15 +36,15 @@ public class UserEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id")
     private List<SongEntity> usersSongs;
 
-    @Column(nullable = false)
-    @ElementCollection
-    private List<RolesEnum> roles;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    private List<Role> roles;
 
 
     public Long getId() {
         return id;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
@@ -63,24 +70,31 @@ public class UserEntity {
         this.usersSongs = usersSongs;
     }
 
-    public List<RolesEnum> getRoles() {
-        return roles;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+        return authorities;
     }
 
-    public void setRoles(List<RolesEnum> roles) {
-        this.roles = roles;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void addRole(RolesEnum role) {
-        if (this.roles != null) {
-            roles.add(role);
-        } else {
-            this.roles = new ArrayList<RolesEnum>();
-            roles.add(role);
-        }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
 }

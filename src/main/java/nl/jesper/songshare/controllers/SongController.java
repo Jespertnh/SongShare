@@ -8,6 +8,7 @@ import nl.jesper.songshare.dto.responses.ApiResponse;
 import nl.jesper.songshare.dto.responses.ListSongsResponse;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
+import nl.jesper.songshare.repositories.UserRepository;
 import nl.jesper.songshare.services.SongService;
 import nl.jesper.songshare.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,20 +39,27 @@ public class SongController {
 
     private final UserService userService;
 
+    private final UserRepository userRepository;
+
     @Autowired
-    public SongController(SongService songService, UserService userService) {
+    public SongController(SongService songService, UserService userService, UserRepository userRepository) {
         this.songService = songService;
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse> uploadSong(@RequestBody SongUploadRequest request) {
-        Optional<UserEntity> userOpt = userService.login(request.getUsername(), request.getPassword());
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), "Wrong login"));
-        }
+    public ResponseEntity<ApiResponse> uploadSong(Authentication authentication, @RequestBody SongUploadRequest request) {
+//        Optional<UserEntity> userOpt = userService.login(request.getUsername(), request.getPassword());
+//        if (userOpt.isEmpty()) {
+//            return ResponseEntity.badRequest().body(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), "Wrong login"));
+//        }
+
+        // Krijg het UserEntity object van de ingelogde gebruiker.
+        UserEntity loggedInUser = userRepository.findUserEntityByUsername(authentication.getName());
+
         try {
-            SongEntity song = songService.addSong(request.getSongFile(), request.getSongtitle(), request.getSongartist(), userOpt.get());
+            SongEntity song = songService.addSong(request.getSongFile(), request.getSongtitle(), request.getSongartist(), loggedInUser);
             return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Song upload successful. Song with ID " + song.getId() + " added."));
         } catch (IOException e) {
             throw new RuntimeException(e);
