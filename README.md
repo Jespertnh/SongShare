@@ -1,7 +1,12 @@
 ## Configuration
 Change the `nl.jesper.songshare.song-files-dir` property in `src/main/resources/application.properties` to a existing directory where you want to store song binaries (this needs to be a absolute path).
 
-Also make sure the database properties are set up correctly.
+Also make sure the database properties are set up correctly. These are the default datasource settings:
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/songshare
+spring.datasource.username=root
+spring.datasource.password=
+```
 
 ## Endpoints
 
@@ -34,6 +39,8 @@ Also make sure the database properties are set up correctly.
 
 | HTTP Method | POST |
 |-------------|------|
+
+
 ```json
 {
   "songFile": {
@@ -44,6 +51,16 @@ Also make sure the database properties are set up correctly.
   "songartist": "example_song_artist"
 }
 ```
+
+You can generate a upload request using `makeUploadRequest.py --file=song.mp3`
+```
+python3 makeUploadRequest.py --file=black.mp3
+Enter the song title: Black
+Enter the song artist: Pearl Jam
+```
+This will base64 encode the file and make a correct upload request. Outputs to `request.json`
+<br><br>Please make sure the file's contents is indeed a playable .mp3 file and not corrupted, or otherwise the API won't accept it.
+The file extension can be anything as the server will add the .mp3 extension if it's not already there.
 
 ### Browse uploaded songs _(authentication required)_
 `http://localhost:8080/songs`
