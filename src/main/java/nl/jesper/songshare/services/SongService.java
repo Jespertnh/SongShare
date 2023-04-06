@@ -15,6 +15,10 @@ import nl.jesper.songshare.exceptions.custom.SongsNotFoundException;
 import nl.jesper.songshare.repositories.SongRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -136,18 +140,26 @@ public class SongService {
     }
 
     /**
-     * Returns a list of songs uploaded by the user with the given username.
-     * @param username the username of the user whose uploads to retrieve
-     * @return a list of SongListing objects representing the user's uploads
-     * @throws SongsNotFoundException if the user has not uploaded any songs
+     * Retrieves a page of song listings for the specified uploader, with optional pagination and sorting.
+     * @param username   the username of the uploader
+     * @param page       the zero-based page number to retrieve
+     * @param size       the number of items per page
+     * @param sortField  the field to sort by
+     * @param sortOrder the sort order (asc or desc)
+     * @return a page of song listings for the specified uploader
+     * @throws SongsNotFoundException if no songs were found for the specified uploader
      */
-    public ListSongsResponse getOwnUploads(String username) {
-        List<SongEntity> songEntities = songRepository.findAllByUploaderUsername(username);
+    public Page<SongListing> getUploadsByUploader(String username, int page, int size, String sortField, String sortOrder) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortField));
+        Page<SongEntity> songEntityPage = songRepository.findAllByUploaderUsername(username, pageable);
 
-        if (!songEntities.isEmpty()) {
-            return makeSongListResponse(songEntities);
-        } else throw new SongsNotFoundException();
+        if (!songEntityPage.isEmpty()) {
+            return songEntityPage.map(SongListing::new);
+        } else {
+            throw new SongsNotFoundException();
+        }
     }
+
 
     /**
      * Generates a List of SongListing DTO's for the user to see.

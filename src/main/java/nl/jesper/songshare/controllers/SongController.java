@@ -110,16 +110,23 @@ public class SongController {
         }
     }
 
-    // TODO: Make results pageable.
     @GetMapping("/myuploads")
-    public ResponseEntity<ListSongsResponse> getOwnUploads(Authentication authentication) {
-        return ResponseEntity.ok(songService.getOwnUploads(authentication.getName()));
+    public Page<SongListing> getOwnUploads(Authentication authentication, @RequestBody(required = false) SearchSongsRequest searchSongsRequest) {
+        // Default values
+        int page = searchSongsRequest != null ? searchSongsRequest.getPage() : 0;
+        int size = searchSongsRequest != null ? searchSongsRequest.getSize() : 10;
+        String search = searchSongsRequest != null ? searchSongsRequest.getSearch() : "";
+        String sortField = searchSongsRequest != null ? searchSongsRequest.getSort() : "uploadTimeStamp";
+        String sortOrder = searchSongsRequest != null ? searchSongsRequest.getOrder() : "desc";
+
+        String username = authentication.getPrincipal().toString();
+        return songService.getUploadsByUploader(username, page, size, sortField, sortOrder);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteSong(Authentication authentication, @RequestBody DeleteSongRequest deleteSongRequest) throws IOException {
         List<Role> currentUserRoles = userService.getUserRoles(authentication);
-        long songID = deleteSongRequest.getSongID();
+        Long songID = deleteSongRequest.getSongID();
 
         if (currentUserRoles.contains(roleRepository.findByRoleName(RoleName.ADMIN))) {
             songService.deleteSong(songID);
