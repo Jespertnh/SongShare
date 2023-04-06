@@ -12,11 +12,21 @@ public class SongShareConfig {
      */
     private String song_files_dir;
 
+    private String domain_name;
+
     public String getSong_files_dir() {
         return song_files_dir;
     }
 
     public void setSong_files_dir(String song_files_dir) {
         this.song_files_dir = song_files_dir;
+    }
+
+    public String getDomain_name() {
+        return domain_name;
+    }
+
+    public void setDomain_name(String domain_name) {
+        this.domain_name = domain_name;
     }
 }

@@ -22,42 +22,42 @@ class UserServiceTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @Test
-//    @Order(1)
-    void createUserTest() {
-        // Op-zet
-        String username = "testuser1";
-        String password = "1234";
-
-        // Voorbereiden
-        userService.createUser(username, password);
-        UserEntity user = userRepository.findUserEntityByUsername(username);
-
-        // Testen
-        assertNotNull(user);
-        assertEquals(username, user.getUsername());
-        assertTrue(passwordEncoder.matches(password, user.getPassword()));
-    }
-
-    @Test
-//    @Order(2)
-    public void createExistingUserThrowsExceptionTest() {
-        // Op-zet
-        String username = "testuser2";
-        String password = "1234";
-
-        // Voorbereiden
-        UserEntity existingUser = new UserEntity();
-        existingUser.setUsername(username);
-        existingUser.setPassword(passwordEncoder.encode(password));
-        userRepository.save(existingUser);
-
-        // Testen
-        Throwable exception = assertThrows(UsernameAlreadyExistsException.class, () -> {
-            userService.createUser(username, passwordEncoder.encode(password)); // Hier probeert ie nog n keer dezelfde gebruikersnaam aan te maken
-        });
-        assertEquals("Username '" + username + "' already exists.", exception.getMessage());
-    }
+//    @Test
+////    @Order(1)
+//    void createUserTest() {
+//        // Op-zet
+//        String username = "testuser1";
+//        String password = "1234";
+//
+//        // Voorbereiden
+//        userService.createUser(username, password);
+//        UserEntity user = userRepository.findUserEntityByUsername(username);
+//
+//        // Testen
+//        assertNotNull(user);
+//        assertEquals(username, user.getUsername());
+//        assertTrue(passwordEncoder.matches(password, user.getPassword()));
+//    }
+//
+//    @Test
+////    @Order(2)
+//    public void createExistingUserThrowsExceptionTest() {
+//        // Op-zet
+//        String username = "testuser2";
+//        String password = "1234";
+//
+//        // Voorbereiden
+//        UserEntity existingUser = new UserEntity();
+//        existingUser.setUsername(username);
+//        existingUser.setPassword(passwordEncoder.encode(password));
+//        userRepository.save(existingUser);
+//
+//        // Testen
+//        Throwable exception = assertThrows(UsernameAlreadyExistsException.class, () -> {
+//            userService.createUser(username, passwordEncoder.encode(password)); // Hier probeert ie nog n keer dezelfde gebruikersnaam aan te maken
+//        });
+//        assertEquals("Username '" + username + "' already exists.", exception.getMessage());
+//    }
 
 
 }

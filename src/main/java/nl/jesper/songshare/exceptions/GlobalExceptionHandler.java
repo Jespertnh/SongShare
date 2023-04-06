@@ -3,6 +3,7 @@ package nl.jesper.songshare.exceptions;
 import nl.jesper.songshare.exceptions.custom.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUsernameAlreadyExistsException(Exception ex) {
         ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT, "That username has already been taken.");
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(Exception ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED, "Wrong username and/or password.");
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
     public static class ErrorResponse {

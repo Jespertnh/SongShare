@@ -1,19 +1,33 @@
 package nl.jesper.songshare.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import nl.jesper.songshare.securitylayerJwt.models.Role;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 // Entity hoort eigenlijk puur een data object te zijn.
 // Repository voor database zoekopdrachten
 // Service voor de logica
 @Entity(name = "user_accounts")
-public class UserEntity {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class UserEntity implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false) // Zorgt er voor dat niemand dezelfde username heeft.
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
@@ -22,16 +36,15 @@ public class UserEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id")
     private List<SongEntity> usersSongs;
 
-    // Dit is bedoeld om te checken of de gebruiker admin is of niet.
-    // Eigenlijk wil ik dit alleen aanpassen via directe toegang tot de database.
-    @Column(columnDefinition = "boolean default false", nullable = false) // Deze annotatie zorgt ervoor dat als er een user wordt aangemaakt, deze niet standaard admin is.
-    private Boolean isAdmin = false; // In MySQL is een boolean een tinyint (0 of 1). Verwarrend maar logisch.
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    private List<Role> roles;
 
 
     public Long getId() {
         return id;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
@@ -44,6 +57,7 @@ public class UserEntity {
         this.password = password;
     }
 
+
     public String getPassword() {
         return password;
     }
@@ -52,11 +66,35 @@ public class UserEntity {
         return usersSongs;
     }
 
-    public Boolean getAdmin() {
-        return isAdmin;
-    }
-
     public void setUsersSongs(List<SongEntity> usersSongs) {
         this.usersSongs = usersSongs;
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+        return authorities;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }
