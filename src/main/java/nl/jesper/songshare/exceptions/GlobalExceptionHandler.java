@@ -52,10 +52,25 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * A class representing an error response containing an HTTP status and a message.
+     */
     public static class ErrorResponse {
+        /**
+         * The HTTP status of the error response.
+         */
         private HttpStatus status;
+
+        /**
+         * The message of the error response.
+         */
         private String message;
 
+        /**
+         * Constructs an error response with the given status and message.
+         * @param status The HTTP status of the error response.
+         * @param message The message of the error response.
+         */
         public ErrorResponse(HttpStatus status, String message) {
             this.status = status;
             this.message = message;
@@ -77,4 +92,5 @@ public class GlobalExceptionHandler {
             this.message = message;
         }
     }
+
 }

@@ -2,6 +2,8 @@ package nl.jesper.songshare.repositories;
 
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -54,4 +56,14 @@ public interface SongRepository extends JpaRepository<SongEntity, Long> {
     List<SongEntity> findSongEntitiesByFileHash(String fileHash);
 
     Optional<SongEntity> findSongEntityByIdAndUploader(Long songID, UserEntity uploader);
+
+    /**
+     * @param songTitle (Part of) a song title (case ignorant).
+     * @param songArtist (Part of) the artist name (case ignorant).
+     * @param pageable
+     * @return
+     */
+    Page<SongEntity> findBySongTitleContainingIgnoreCaseOrSongArtistContainingIgnoreCase(String songTitle, String songArtist, Pageable pageable);
+
+    Page<SongEntity> findAllByUploaderUsername(String uploaderUsername, Pageable pageable);
 }

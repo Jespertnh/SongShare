@@ -28,9 +28,10 @@ public class UserController {
     }
 
     @PostMapping(path = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse> registerUser(@RequestBody RegisterDto registerDto) {
-        userService.register(registerDto);
-        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Registered user successfully."));
+    public ResponseEntity<?> registerUser(@RequestBody RegisterDto registerDto) {
+//        userService.register(registerDto);
+//        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), "Registered user successfully."));
+        return userService.register(registerDto);
     }
 
     /**

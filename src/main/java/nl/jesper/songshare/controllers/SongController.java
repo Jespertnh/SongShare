@@ -22,6 +22,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -83,10 +84,10 @@ public class SongController {
         }
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<ListSongsResponse> getAllSongs(@RequestBody SearchSongsRequest searchSongsRequest) {
-        return ResponseEntity.ok(songService.getSongListingResponse(searchSongsRequest));
-    }
+//    @GetMapping("/search")
+//    public ResponseEntity<ListSongsResponse> getAllSongs(@RequestBody SearchSongsRequest searchSongsRequest) {
+//        return ResponseEntity.ok(songService.getSongListingResponse(searchSongsRequest));
+//    }
 
     @GetMapping("/download")
     public ResponseEntity<?> downloadSong(@RequestBody DownloadSongRequest request) throws FileNotFoundException {
@@ -110,14 +111,22 @@ public class SongController {
     }
 
     @GetMapping("/myuploads")
-    public ResponseEntity<ListSongsResponse> getOwnUploads(Authentication authentication) {
-        return ResponseEntity.ok(songService.getOwnUploads(authentication.getName()));
+    public Page<SongListing> getOwnUploads(Authentication authentication, @RequestBody(required = false) SearchSongsRequest searchSongsRequest) {
+        // Default values
+        int page = searchSongsRequest != null ? searchSongsRequest.getPage() : 0;
+        int size = searchSongsRequest != null ? searchSongsRequest.getSize() : 10;
+        String search = searchSongsRequest != null ? searchSongsRequest.getSearch() : "";
+        String sortField = searchSongsRequest != null ? searchSongsRequest.getSort() : "uploadTimeStamp";
+        String sortOrder = searchSongsRequest != null ? searchSongsRequest.getOrder() : "desc";
+
+        String username = authentication.getPrincipal().toString();
+        return songService.getUploadsByUploader(username, page, size, sortField, sortOrder);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteSong(Authentication authentication, @RequestBody DeleteSongRequest deleteSongRequest) {
+    public ResponseEntity<?> deleteSong(Authentication authentication, @RequestBody DeleteSongRequest deleteSongRequest) throws IOException {
         List<Role> currentUserRoles = userService.getUserRoles(authentication);
-        long songID = deleteSongRequest.getSongID();
+        Long songID = deleteSongRequest.getSongID();
 
         if (currentUserRoles.contains(roleRepository.findByRoleName(RoleName.ADMIN))) {
             songService.deleteSong(songID);
@@ -132,14 +141,30 @@ public class SongController {
         }
     }
 
-    // TODO: Werk verder aan implementeren pageable/sorteerbare zoekopdrachten
-    @GetMapping("/")
-    public Page<SongListing> getAllSongs(@RequestParam(value = "page", defaultValue = "0") int page,
-                                         @RequestParam(value = "size", defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<SongEntity> songEntityPage = songRepository.findAll(pageable);
+    @GetMapping()
+    public Page<SongListing> search(@RequestBody(required = false) SearchSongsRequest searchSongsRequest) {
+
+        // Default values
+        int page = searchSongsRequest != null ? searchSongsRequest.getPage() : 0;
+        int size = searchSongsRequest != null ? searchSongsRequest.getSize() : 10;
+        String search = searchSongsRequest != null ? searchSongsRequest.getSearch() : "";
+        String sortField = searchSongsRequest != null ? searchSongsRequest.getSort() : "uploadTimeStamp";
+        String sortOrder = searchSongsRequest != null ? searchSongsRequest.getOrder() : "desc";
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortField));
+
+        Page<SongEntity> songEntityPage;
+
+        if (search.isEmpty()) {
+            songEntityPage = songRepository.findAll(pageable);
+        } else {
+            songEntityPage = songRepository.findBySongTitleContainingIgnoreCaseOrSongArtistContainingIgnoreCase(search, search, pageable);
+        }
+
+        // Map to DTO so not all internal information is revealed
         return songEntityPage.map(SongListing::new);
     }
+
 
 //    @GetMapping("/test")
 //    public ResponseEntity<?> getPrincipal(Authentication authentication) {

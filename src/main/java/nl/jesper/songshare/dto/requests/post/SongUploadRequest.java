@@ -6,29 +6,11 @@ import nl.jesper.songshare.SongFile;
  * POST request in JSON format for a song upload.
  */
 public class SongUploadRequest {
-    private String username;
-    private String password;
     private SongFile songFile;
     private String songtitle;
     private String songartist;
 
     public SongUploadRequest() {}
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public SongFile getSongFile() {
         return songFile;
