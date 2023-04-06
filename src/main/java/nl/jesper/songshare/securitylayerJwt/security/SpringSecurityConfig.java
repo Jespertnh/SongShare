@@ -31,7 +31,11 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/users/register").permitAll()
                 .requestMatchers("/users/login").permitAll()
-                .requestMatchers("/songs/upload").hasAuthority("USER")
+                .requestMatchers("/songs").hasAuthority("USER")
+                .requestMatchers("/songs/**").hasAuthority("USER")
+//                .requestMatchers("/songs/download").hasAuthority("USER")
+//                .requestMatchers("/songs/search").hasAuthority("USER")
+//                .requestMatchers("/songs/myuploads").hasAuthority("USER")
                 .requestMatchers("/admin/**").hasAuthority("ADMIN");
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

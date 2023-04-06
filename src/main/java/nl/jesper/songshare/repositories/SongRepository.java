@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SongRepository extends JpaRepository<SongEntity, Long> {
@@ -34,9 +35,23 @@ public interface SongRepository extends JpaRepository<SongEntity, Long> {
     List<SongEntity> findSongEntitiesByUploader(UserEntity uploader);
 
     /**
+     * @param uploaderUsername The username of the uploader
+     * @return A list of all songs uploaded by that user.
+     */
+    List<SongEntity> findAllByUploaderUsername(String uploaderUsername);
+
+    /**
      * @param songTitle (Part of) a song title (case ignorant).
      * @param artistName (Part of) the artist name (case ignorant).
      * @return A list of all SongEntity's that contain (parts of) both the song title and artist name.
      */
     List<SongEntity> findSongEntitiesBySongTitleContainsIgnoreCaseAndSongArtistContainsIgnoreCase(String songTitle, String artistName);
+
+    /**
+     * @param fileHash the hash of the file.
+     * @return A list of all songs in the database that link to the same file on the filesystem.
+     */
+    List<SongEntity> findSongEntitiesByFileHash(String fileHash);
+
+    Optional<SongEntity> findSongEntityByIdAndUploader(Long songID, UserEntity uploader);
 }

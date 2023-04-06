@@ -1,5 +1,6 @@
 package nl.jesper.songshare;
 
+import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.RoleRepository;
 import nl.jesper.songshare.repositories.UserRepository;
 import nl.jesper.songshare.securitylayerJwt.models.Role;
@@ -12,7 +13,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
+import java.util.*;
 
 //@SpringBootApplication(exclude = {SecurityAutoConfiguration.class }) // Voor debuggen met postman anders zit security in de weg.
 @SpringBootApplication
@@ -22,11 +23,41 @@ public class SongShareApplication {
         SpringApplication.run(SongShareApplication.class, args);
     }
 
+    // Initialisatie (roles toevoegen aan database).
     @Bean
     CommandLineRunner run (UserService userService , RoleRepository roleRepository , UserRepository userRepository , PasswordEncoder passwordEncoder)
     {return  args ->
-    {   userService.saveRole(new Role(RoleName.USER));
-        userService.saveRole(new Role(RoleName.ADMIN));
+    {
+        if (roleRepository.findByRoleName(RoleName.USER) == null) {
+            userService.saveRole(new Role(RoleName.USER));
+        }
+        if (roleRepository.findByRoleName(RoleName.ADMIN) == null) {
+            userService.saveRole(new Role(RoleName.ADMIN));
+        }
+
+//        // Check if admin user exists and add it if it doesn't
+//        if (userRepository.findUserEntityByUsername("admin") == null) {
+//            Role adminRole = roleRepository.findByRoleName(RoleName.ADMIN);
+//            Role userRole = roleRepository.findByRoleName(RoleName.USER);
+//
+//            UserEntity adminUser = new UserEntity();
+//            adminUser.setUsername("admin");
+//            adminUser.setPassword(passwordEncoder.encode("admin"));
+//            adminUser.setRoles(Arrays.asList(adminRole, userRole));
+//            userRepository.save(adminUser);
+//        }
+
+//        UserEntity adminUser = new UserEntity();
+//        adminUser.setUsername("admin");
+//        adminUser.setPassword(passwordEncoder.encode("admin"));
+//
+//        List<Role> roles = new ArrayList<>();
+//        roles.add(roleRepository.findByRoleName(RoleName.USER));
+//        roles.add(roleRepository.findByRoleName(RoleName.ADMIN));
+//
+//        adminUser.setRoles(roles);
+//        userService.saveUser(adminUser);
+
 //        userService.saveRole(new Role(RoleName.SUPERADMIN));
 //        userService.saverUser(new User("admin@gmail.com", passwordEncoder.encode("adminPassword"), new ArrayList<>()));
 //        userService.saverUser(new User("superadminadmin@gmail.com", passwordEncoder.encode("superadminPassword"), new ArrayList<>()));

@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -120,8 +121,8 @@ public class SongService {
     }
 
     public ListSongsResponse getSongListingResponse(SearchSongsRequest searchSongsRequest) {
-        ListSongsResponse listSongsResponse = new ListSongsResponse();
-        List<SongEntity> songEntities = null;
+//        ListSongsResponse listSongsResponse = new ListSongsResponse();
+        List<SongEntity> songEntities = new ArrayList<>();
         String songTitleQuery = searchSongsRequest.getSongTitle();
         String songArtistQuery = searchSongsRequest.getArtistName();
 
@@ -135,23 +136,82 @@ public class SongService {
             throw new EmptySearchException();
         }
 
-        assert songEntities != null;
         if (!songEntities.isEmpty()) {
-            for (SongEntity songEntity : songEntities) {
-                SongListing songListing = new SongListing();
-
-//                String downloadURL = WebMvcLinkBuilder.linkTo(SongController.class, downloadSong(songEntity.getId())).toString();
-
-                songListing.setSongTitle(songEntity.getSongTitle());
-                songListing.setArtistName(songEntity.getSongArtist());
-                songListing.setSongID(songEntity.getId());
-                songListing.setFileName(songEntity.getOriginalFilename());
-                songListing.setUploadDate(songEntity.getUploadTimeStamp().toString());
-//                songListing.setDownloadURL(downloadURL);
-                listSongsResponse.addSong(songListing);
-            }
+            return makeSongListResponse(songEntities);
         } else throw new SongsNotFoundException();
+    }
+
+    public ListSongsResponse getOwnUploads(String username) {
+        List<SongEntity> songEntities = songRepository.findAllByUploaderUsername(username);
+
+        if (!songEntities.isEmpty()) {
+            return makeSongListResponse(songEntities);
+        } else throw new SongsNotFoundException();
+    }
+
+    /**
+     * Generates a List of SongListing DTO's for the user to see.
+     * @param songEntities A list of all the songs you want to be in the list
+     * @return A ListSongsResponse which you can return to the user in a controller.
+     */
+    private ListSongsResponse makeSongListResponse(List<SongEntity> songEntities) {
+        ListSongsResponse listSongsResponse = new ListSongsResponse();
+        for (SongEntity songEntity : songEntities) {
+            SongListing songListing = new SongListing(songEntity);
+
+//            songListing.setSongTitle(songEntity.getSongTitle());
+//            songListing.setArtistName(songEntity.getSongArtist());
+//            songListing.setSongID(songEntity.getId());
+//            songListing.setFileName(songEntity.getOriginalFilename());
+//            songListing.setUploadDate(songEntity.getUploadTimeStamp().toString());
+
+            listSongsResponse.addSong(songListing);
+        }
         return listSongsResponse;
+    }
+
+    /**
+     * First deletes the SongEntity from the database, then checks if there are other SongEntities
+     * that link to the same file on the filesystem, if not, the file is also removed from the filesystem.
+     * @param songID the ID of the SongEntity you want removed.
+     */
+    public void deleteSong(Long songID) {
+        Optional<SongEntity> optionalSongEntity = songRepository.findById(songID);
+
+        if (optionalSongEntity.isPresent()) {
+            // Delete song entry from database
+            songRepository.deleteById(songID);
+
+            // Check if there are other song entries that use the same file on the filesystem
+            SongEntity songEntity = optionalSongEntity.get();
+            String songHash = songEntity.getFileHash();
+            List<SongEntity> songsThatHaveSameHash = songRepository.findSongEntitiesByFileHash(songHash);
+            if (songsThatHaveSameHash.isEmpty()) {
+                String filePath = uploadDirString + "/" + songHash;
+
+                File songFile = new File(filePath);
+
+                if (songFile.exists() && songFile.isFile()) {
+                    boolean deleted = songFile.delete();
+
+                    if (!deleted) {
+                        throw new RuntimeException("Error removing file: " + filePath);
+                    }
+                } else throw new RuntimeException("File doesn't exist or is a directory: " + filePath);
+            }
+
+        }
+    }
+
+    /**
+     * Checks if the UserEntity is indeed the uploader of a song.
+     * @param user The UserEntity.
+     * @param songID The ID of the song.
+     * @return True if the UserEntity is the owner of the song.
+     */
+    public boolean HasUploadedSong(UserEntity user, long songID) {
+        Optional<SongEntity> optionalSongEntity = songRepository.findSongEntityByIdAndUploader(songID,user);
+        return optionalSongEntity.isPresent();
     }
 
 

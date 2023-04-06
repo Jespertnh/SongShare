@@ -2,6 +2,7 @@ package nl.jesper.songshare.repositories;
 
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
+import nl.jesper.songshare.securitylayerJwt.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findUserEntityByUsersSongsContaining(SongEntity song); // Vind de user bij een Song
 
     Boolean existsByUsername(String username);
+
 }

@@ -127,4 +127,11 @@ public class UserService implements IUserService {
     public UserEntity saveUser(UserEntity user) {
         return userRepository.save(user);
     }
+
+    public List<Role> getUserRoles(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserEntity user = userRepository.findUserEntityByUsername(authentication.getPrincipal().toString());
+            return user.getRoles();
+        } else throw new RuntimeException("Error while trying to retrieve users roles.");
+    }
 }

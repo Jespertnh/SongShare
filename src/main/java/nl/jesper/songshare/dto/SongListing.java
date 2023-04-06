@@ -1,5 +1,7 @@
 package nl.jesper.songshare.dto;
 
+import nl.jesper.songshare.entities.SongEntity;
+
 /**
  * Een DTO-object wat alleen de informatie die een gebruiker moet zien van 1 nummer bevat.
  */
@@ -14,6 +16,14 @@ public class SongListing {
     private String fileName;
 //    private String downloadURL;
     private Long songID;
+
+    public SongListing(SongEntity songEntity) {
+        this.artistName = songEntity.getSongArtist();
+        this.songTitle = songEntity.getSongTitle();
+        this.uploadDate = songEntity.getUploadTimeStamp().toString();
+        this.fileName = songEntity.getOriginalFilename();
+        this.songID = songEntity.getId();
+    }
 
     public String getArtistName() {
         return artistName;
