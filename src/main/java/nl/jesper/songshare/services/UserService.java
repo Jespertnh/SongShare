@@ -84,6 +84,12 @@ public class UserService implements IUserService {
 //        }
 //    }
 
+
+    /**
+     * Authenticates a user with the given username and password, and generates a JWT token for the user.
+     * @param loginDto the LoginDto object containing the user's username and password.
+     * @return a JWT token as a String.
+     */
     @Override
     public String authenticate(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -96,10 +102,15 @@ public class UserService implements IUserService {
         UserEntity user = userRepository.findUserEntityByUsername(authentication.getName());
         List<String> rolesNames = new ArrayList<>();
         user.getRoles().forEach(r -> rolesNames.add(r.getRoleName()));
-        String token = jwtUtilities.generateToken(user.getUsername(), rolesNames);
-        return token;
+        return jwtUtilities.generateToken(user.getUsername(), rolesNames);
     }
 
+
+    /**
+     * Registers a new user with the given username and password.
+     * @param registerDto the RegisterDto object containing the new user's username and password.
+     * @return a ResponseEntity object containing a BearerToken and an HTTP status code.
+     */
     @Override
     public ResponseEntity<?> register(RegisterDto registerDto) {
         if (userRepository.existsByUsername(registerDto.getUsername())) {
@@ -128,6 +139,12 @@ public class UserService implements IUserService {
         return userRepository.save(user);
     }
 
+    /**
+     * Gets the roles of the authenticated user.
+     * @param authentication the Authentication object representing the currently authenticated user.
+     * @return a List of Role objects representing the roles of the authenticated user.
+     * @throws RuntimeException if there is an error while retrieving the user's roles.
+     */
     public List<Role> getUserRoles(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
             UserEntity user = userRepository.findUserEntityByUsername(authentication.getPrincipal().toString());
