@@ -1,6 +1,5 @@
 package nl.jesper.songshare;
 
-import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.RoleRepository;
 import nl.jesper.songshare.repositories.UserRepository;
 import nl.jesper.songshare.securitylayerJwt.models.Role;
@@ -9,11 +8,8 @@ import nl.jesper.songshare.services.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.*;
 
 //@SpringBootApplication(exclude = {SecurityAutoConfiguration.class }) // Voor debuggen met postman anders zit security in de weg.
 @SpringBootApplication
@@ -25,7 +21,7 @@ public class SongShareApplication {
 
     // Initialisatie (roles toevoegen aan database).
     @Bean
-    CommandLineRunner run (UserService userService , RoleRepository roleRepository , UserRepository userRepository , PasswordEncoder passwordEncoder)
+    CommandLineRunner run (UserService userService , RoleRepository roleRepository)
     {return  args ->
     {
         if (roleRepository.findByRoleName(RoleName.USER) == null) {

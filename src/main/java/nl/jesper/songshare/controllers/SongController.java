@@ -7,7 +7,6 @@ import nl.jesper.songshare.dto.requests.get.DownloadSongRequest;
 import nl.jesper.songshare.dto.requests.get.SearchSongsRequest;
 import nl.jesper.songshare.dto.requests.post.SongUploadRequest;
 import nl.jesper.songshare.dto.responses.ApiResponse;
-import nl.jesper.songshare.dto.responses.ListSongsResponse;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.RoleRepository;
@@ -18,7 +17,6 @@ import nl.jesper.songshare.securitylayerJwt.models.RoleName;
 import nl.jesper.songshare.services.SongService;
 import nl.jesper.songshare.services.UserService;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
@@ -30,17 +28,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller voor song endpoints

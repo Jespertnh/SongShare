@@ -2,19 +2,16 @@ package nl.jesper.songshare.securitylayerJwt.security;
 
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import io.jsonwebtoken.security.Keys;
-
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 
