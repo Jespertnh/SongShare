@@ -86,9 +86,7 @@ public class UserService implements IUserService {
             user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
             Role role_user = roleRepository.findByRoleName(RoleName.USER);
-            List<Role> roles = new ArrayList<>();
 
-            roles.add(role_user);
             user.setRoles(Collections.singletonList(role_user));
             userRepository.save(user);
             String token = jwtUtilities.generateToken(registerDto.getUsername(), Collections.singletonList(role_user.getRoleName()));

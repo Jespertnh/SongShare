@@ -8,8 +8,8 @@ import java.io.File;
  */
 public class SongFileAndOriginalFilename {
 
-    private String originalFilename;
-    private File songFile;
+    private final String originalFilename;
+    private final File songFile;
 
     public SongFileAndOriginalFilename(String originalFilename, File songFile) {
         this.originalFilename = originalFilename;

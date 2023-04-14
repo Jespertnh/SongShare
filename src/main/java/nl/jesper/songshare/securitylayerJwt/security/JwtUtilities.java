@@ -28,7 +28,7 @@ public class JwtUtilities {
     /**
      * The secret key used for signing JWTs.
      */
-    private SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     /**
      * The duration (in milliseconds) that a JWT is valid for.
@@ -143,7 +143,7 @@ public class JwtUtilities {
     public String getToken(HttpServletRequest httpServletRequest) {
         final String bearerToken = httpServletRequest.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
+            return bearerToken.substring(7);
         } // The part after "Bearer "
         return null;
     }

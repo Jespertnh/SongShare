@@ -35,7 +35,19 @@ public class SongShareApplication {
             userService.saveRole(new Role(RoleName.ADMIN));
         }
 
-//        // Check if admin user exists and add it if it doesn't
+//        New admin code - crashes spring.
+//        if (!userRepository.existsByUsername("admin")) {
+//            UserEntity user = new UserEntity();
+//            user.setUsername("admin");
+//            user.setPassword(passwordEncoder.encode("admin"));
+//
+//            Role role_admin = roleRepository.findByRoleName(RoleName.ADMIN);
+//
+//            user.setRoles(Collections.singletonList(role_admin));
+//            userRepository.save(user);
+//        }
+
+//        // Check if admin user exists and add it if it doesn't - crashes spring
 //        if (userRepository.findUserEntityByUsername("admin") == null) {
 //            Role adminRole = roleRepository.findByRoleName(RoleName.ADMIN);
 //            Role userRole = roleRepository.findByRoleName(RoleName.USER);
