@@ -11,7 +11,7 @@ public interface IUserService {
     //ResponseEntity<?> register (RegisterDto registerDto);
     //  ResponseEntity<BearerToken> authenticate(LoginDto loginDto);
 
-    String authenticate(LoginDto loginDto);
+    ResponseEntity<String> authenticate(LoginDto loginDto);
 
     ResponseEntity<?> register(RegisterDto registerDto);
 

@@ -4,7 +4,6 @@ import nl.jesper.songshare.entities.UserEntity;
 import nl.jesper.songshare.repositories.RoleRepository;
 import nl.jesper.songshare.repositories.UserRepository;
 import nl.jesper.songshare.securitylayerJwt.businessLogic.IUserService;
-import nl.jesper.songshare.securitylayerJwt.dto.BearerToken;
 import nl.jesper.songshare.securitylayerJwt.dto.LoginDto;
 import nl.jesper.songshare.securitylayerJwt.dto.RegisterDto;
 import nl.jesper.songshare.securitylayerJwt.models.Role;
@@ -47,51 +46,14 @@ public class UserService implements IUserService {
     }
 
 
-//    public void createUser(RegisterDto registerDto) throws UsernameAlreadyExistsException {
-//        String chosenUsername = registerDto.getUsername();
-//        String hashedChosenPassword = passwordEncoder.encode(registerDto.getPassword());
-//
-//        UserEntity user = userRepository.findUserEntityByUsername(chosenUsername);
-//        if (user != null) {
-//            // Username bestaat al.
-//            throw new UsernameAlreadyExistsException("Username '" + chosenUsername + "' already exists.");
-//        } else {
-//            // Standaard rol = USER
-//            Role role = roleRepository.findByRoleName(RoleName.USER);
-//
-//            // Username bestaat niet, maak nieuwe gebruiker aan.
-//            user = new UserEntity();
-//            user.setUsername(chosenUsername);
-//            user.setPassword(hashedChosenPassword);
-//            user.setRoles(Collections.singletonList(role));
-//            userRepository.save(user);
-//        }
-//    }
-
-//    /**
-//     *
-//     * @param username the username of the UserEntity you're trying to retrieve.
-//     * @param unhashedPassword the unhashed password of the UserEntity you're trying to retrieve.
-//     * @return The UserEntity if password is correct and null if incorrect.
-//     */
-//    public Optional<UserEntity> login(String username, String unhashedPassword) {
-//        UserEntity user = userRepository.findUserEntityByUsername(username);
-//
-//        if (passwordEncoder.matches(unhashedPassword,user.getPassword())) {
-//            return Optional.of(user);
-//        } else {
-//            return Optional.empty();
-//        }
-//    }
-
-
     /**
      * Authenticates a user with the given username and password, and generates a JWT token for the user.
+     *
      * @param loginDto the LoginDto object containing the user's username and password.
      * @return a JWT token as a String.
      */
     @Override
-    public String authenticate(LoginDto loginDto) {
+    public ResponseEntity<String> authenticate(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
@@ -102,8 +64,10 @@ public class UserService implements IUserService {
         UserEntity user = userRepository.findUserEntityByUsername(authentication.getName());
         List<String> rolesNames = new ArrayList<>();
         user.getRoles().forEach(r -> rolesNames.add(r.getRoleName()));
-        return jwtUtilities.generateToken(user.getUsername(), rolesNames);
+        String token = jwtUtilities.generateToken(user.getUsername(), rolesNames);
+        return ResponseEntity.ok().header("Authorization", "Bearer " + token).body(token);
     }
+
 
 
     /**
@@ -112,22 +76,23 @@ public class UserService implements IUserService {
      * @return a ResponseEntity object containing a BearerToken and an HTTP status code.
      */
     @Override
-    public ResponseEntity<?> register(RegisterDto registerDto) {
+    public ResponseEntity<String> register(RegisterDto registerDto) {
         if (userRepository.existsByUsername(registerDto.getUsername())) {
-            return new ResponseEntity<>("Username is already taken!", HttpStatus.CONFLICT);
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Username is already taken!");
         } else {
             UserEntity user = new UserEntity();
             user.setUsername(registerDto.getUsername());
             user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-            // Standaard rol = USER
             Role role = roleRepository.findByRoleName(RoleName.USER);
             user.setRoles(Collections.singletonList(role));
             userRepository.save(user);
             String token = jwtUtilities.generateToken(registerDto.getUsername(), Collections.singletonList(role.getRoleName()));
-            return new ResponseEntity<>(new BearerToken(token, "Bearer "), HttpStatus.OK);
+            return ResponseEntity.ok().header("Authorization", "Bearer " + token).body(token);
         }
     }
+
 
     @Override
     public Role saveRole(Role role) {

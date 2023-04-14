@@ -1,4 +1,4 @@
-package nl.jesper.songshare;
+package nl.jesper.songshare.dto;
 
 public class SongFile {
 
@@ -17,8 +17,6 @@ public class SongFile {
         this.fileName = fileName;
     }
 
-    public SongFile() {
-    }
 
     public String getSongBase64() {
         return songBase64;

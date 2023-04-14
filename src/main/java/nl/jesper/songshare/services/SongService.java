@@ -1,14 +1,12 @@
 package nl.jesper.songshare.services;
 
 import nl.jesper.songshare.SongShareConfig;
-import nl.jesper.songshare.SongFile;
+import nl.jesper.songshare.dto.SongFile;
 import nl.jesper.songshare.dto.SongFileAndOriginalFilename;
 import nl.jesper.songshare.dto.SongListing;
-import nl.jesper.songshare.dto.requests.get.SearchSongsRequest;
 import nl.jesper.songshare.dto.responses.ListSongsResponse;
 import nl.jesper.songshare.entities.SongEntity;
 import nl.jesper.songshare.entities.UserEntity;
-import nl.jesper.songshare.exceptions.custom.EmptySearchException;
 import nl.jesper.songshare.exceptions.custom.FileTypeNotSongException;
 import nl.jesper.songshare.exceptions.custom.SongSizeException;
 import nl.jesper.songshare.exceptions.custom.SongsNotFoundException;
@@ -27,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;

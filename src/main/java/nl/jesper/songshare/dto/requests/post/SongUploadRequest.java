@@ -1,6 +1,6 @@
 package nl.jesper.songshare.dto.requests.post;
 
-import nl.jesper.songshare.SongFile;
+import nl.jesper.songshare.dto.SongFile;
 
 /**
  * POST request in JSON format for a song upload.
