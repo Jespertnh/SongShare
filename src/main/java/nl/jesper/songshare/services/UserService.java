@@ -85,10 +85,13 @@ public class UserService implements IUserService {
             user.setUsername(registerDto.getUsername());
             user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-            Role role = roleRepository.findByRoleName(RoleName.USER);
-            user.setRoles(Collections.singletonList(role));
+            Role role_user = roleRepository.findByRoleName(RoleName.USER);
+            List<Role> roles = new ArrayList<>();
+
+            roles.add(role_user);
+            user.setRoles(Collections.singletonList(role_user));
             userRepository.save(user);
-            String token = jwtUtilities.generateToken(registerDto.getUsername(), Collections.singletonList(role.getRoleName()));
+            String token = jwtUtilities.generateToken(registerDto.getUsername(), Collections.singletonList(role_user.getRoleName()));
             return ResponseEntity.ok().header("Authorization", "Bearer " + token).body(token);
         }
     }

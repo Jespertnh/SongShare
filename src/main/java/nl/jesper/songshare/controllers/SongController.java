@@ -17,6 +17,8 @@ import nl.jesper.songshare.securitylayerJwt.models.Role;
 import nl.jesper.songshare.securitylayerJwt.models.RoleName;
 import nl.jesper.songshare.services.SongService;
 import nl.jesper.songshare.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
@@ -43,6 +45,7 @@ import java.util.Optional;
 /**
  * Controller voor song endpoints
  */
+
 @RestController
 @RequestMapping("/songs")
 public class SongController {
@@ -128,16 +131,25 @@ public class SongController {
         List<Role> currentUserRoles = userService.getUserRoles(authentication);
         Long songID = deleteSongRequest.getSongID();
 
+        Logger log;
+
         if (currentUserRoles.contains(roleRepository.findByRoleName(RoleName.ADMIN))) {
             songService.deleteSong(songID);
-            return ResponseEntity.ok("Song with ID " + songID + " successfully deleted with admin privileges.");
+//            return ResponseEntity.ok("Song with ID " + songID + " successfully deleted with admin privileges.");
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(HttpStatus.OK.value(), "Song with ID " + songID + " successfully deleted with admin privileges."));
         } else {
             // If user doesn't have the admin role, check if he is the uploader of the song he wants to delete.
             UserEntity currentUser = userRepository.findUserEntityByUsername(authentication.getPrincipal().toString());
             if (songService.HasUploadedSong(currentUser, songID)) {
                 songService.deleteSong(songID);
                 return ResponseEntity.ok("Song with ID " + songID + " successfully deleted.");
-            } else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), "You are not the uploader of this song."));
+            } else {
+                System.out.println("Not the uploader:\n");
+                for (Role currentUserRole : currentUserRoles) {
+                    System.out.println(currentUserRole.getRoleName() + "\n");
+                }
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), "You are not the uploader of this song."));
+            }
         }
     }
 

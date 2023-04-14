@@ -1,0 +1,16 @@
+nl.jesper.songshare
+nl.jesper.songshare.controllers
+nl.jesper.songshare.dto
+nl.jesper.songshare.dto.requests.delete
+nl.jesper.songshare.dto.requests.get
+nl.jesper.songshare.dto.requests.post
+nl.jesper.songshare.dto.responses
+nl.jesper.songshare.entities
+nl.jesper.songshare.exceptions
+nl.jesper.songshare.exceptions.custom
+nl.jesper.songshare.repositories
+nl.jesper.songshare.securitylayerJwt.businessLogic
+nl.jesper.songshare.securitylayerJwt.dto
+nl.jesper.songshare.securitylayerJwt.models
+nl.jesper.songshare.securitylayerJwt.security
+nl.jesper.songshare.services
